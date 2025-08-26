@@ -1,0 +1,14 @@
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# IDEs & OS
+.vscode/
+.idea/
+.DS_Store
+
+# Reportes y temporales del script
+auditoria_*.txt
+temp_subs.txt
