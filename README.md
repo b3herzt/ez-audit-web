@@ -93,5 +93,5 @@ python3 ez_audit_web.py
 ---
 
 <p align="center">
-  Hecho con ☕ por Ign Bravo — Licencia MIT
+  Hecho con ☕ por b3herzt — Licencia MIT
 </p>
