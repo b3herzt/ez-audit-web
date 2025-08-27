@@ -179,19 +179,35 @@ def host_header_injection(url, file):
         out(f"    [!] Falló la prueba de inyección: {e}", file)
 
 def check_cors(url, file):
-    out("\n[=== PRUEBA DE POLÍTICA CORS ===]", file)
-    out('[Método: requests.get con header "Origin"]', file)
+    out("\n[=== PRUEBA DE CORS ===]", file)
     try:
-        r = requests.get(url, headers={"Origin": "https://evil.com"})
-        cors = r.headers.get('Access-Control-Allow-Origin')
-        if cors == '*':
-            out("    ⚠️ CORS está configurado como abierto '*', lo cual es riesgoso.", file)
-        elif cors:
-            out(f"    CORS permite: {cors}", file)
+        evil_origin = "https://evil.com"
+        r = requests.get(url, headers={"Origin": evil_origin}, timeout=10)
+
+        cors = r.headers.get("Access-Control-Allow-Origin")
+        methods = r.headers.get("Access-Control-Allow-Methods")
+        headers = r.headers.get("Access-Control-Allow-Headers")
+        creds = r.headers.get("Access-Control-Allow-Credentials")
+
+        if cors:
+            if cors == "*":
+                out(f"    [!] Riesgo: CORS abierto a cualquier origen ({cors})", file)
+            elif cors == evil_origin:
+                out(f"    [!] Riesgo: CORS refleja origen malicioso ({cors})", file)
+            else:
+                out(f"    Access-Control-Allow-Origin: {cors}", file)
         else:
-            out("    No hay cabecera Access-Control-Allow-Origin en la respuesta.", file)
+            out("    No se encontró cabecera Access-Control-Allow-Origin.", file)
+
+        if methods:
+            out(f"    Métodos permitidos: {methods}", file)
+        if headers:
+            out(f"    Headers permitidos: {headers}", file)
+        if creds:
+            out(f"    Allow-Credentials: {creds}", file)
+
     except Exception as e:
-        out(f"    [!] Error al probar CORS: {e}", file)
+        out(f"    [!] Error: {e}", file)
 
 def gobuster_scan(url, file):
     default_wordlist = "/usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt"
