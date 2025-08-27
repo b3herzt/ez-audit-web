@@ -75,6 +75,17 @@ python3 ez_audit_web.py
 12) Sublist3r (subdominios)
 13) SSLScan
 
+## 🖥️ Compatibilidad
+- **Linux (recomendado)**  
+  Probado en Ubuntu/Debian/Kali. Todas las herramientas externas (`nmap`, `nikto`, `gobuster`, `whatweb`, `sslscan`, `whois`, `sublist3r`) están disponibles como paquetes.
+
+- **Windows**  
+  El script corre en Python, pero varias herramientas externas no están disponibles nativamente.  
+  - Opción 1: instalar binarios de cada herramienta (si existen versiones para Windows).  
+  - Opción 2 (recomendada): usar **WSL (Windows Subsystem for Linux)** con Ubuntu y seguir las instrucciones de instalación para Linux.
+
+👉 Si solo quieres probar la parte básica (cabeceras HTTP, cookies, CORS, etc.), basta con tener Python y `pip install -r requirements.txt`.
+
 ## 🧯 Legal & Ética
 - Realiza pruebas <b>exclusivamente</b> con autorización explícita del propietario del objetivo.
 - Muchas pruebas generan tráfico que puede activar WAF/IDS/IPS.
