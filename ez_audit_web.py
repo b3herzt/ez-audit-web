@@ -117,15 +117,33 @@ def http_headers(url, file):
 
 def check_cookies(url, file):
     out("\n[=== ANALIZAR COOKIES DE RESPUESTA ===]", file)
-    out("[Método: requests.get]", file)
+    out("[Método: requests.Session().get]", file)
     try:
-        r = requests.get(url, headers=HEADERS)
-        cookies = r.headers.get('Set-Cookie')
-        if cookies:
-            out("    Set-Cookie encontrado:", file)
-            out("    " + cookies, file)
+        s = requests.Session()
+        r = s.get(url, headers=HEADERS, timeout=10)  # sigue redirects por defecto
+
+        # 1) Cookies consolidadas en la sesión (post-redirect)
+        if s.cookies:
+            out("    Cookies encontradas (después de redirecciones):", file)
+            for c in s.cookies:
+                out(f"    {c.name}: {c.value}", file)
         else:
-            out("    No se encontraron cookies en la respuesta.", file)
+            out("    No se encontraron cookies en la sesión.", file)
+
+        # 2) Cabeceras Set-Cookie crudas en todas las respuestas del flujo
+        def dump_set_cookie(resp, label):
+            raw = resp.headers.get("Set-Cookie")
+            if raw:
+                out(f"    [Set-Cookie {label}]:", file)
+                out(f"    {raw}", file)
+
+        # Respuestas intermedias (redirects)
+        for i, resp in enumerate(r.history, 1):
+            dump_set_cookie(resp, f"historial #{i}")
+
+        # Respuesta final
+        dump_set_cookie(r, "final")
+
     except Exception as e:
         out(f"    [!] Error: {e}", file)
 
